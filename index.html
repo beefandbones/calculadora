@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Calculadora Dieta BARF | Beef & Bones</title>
+    <meta name="description" content="Calculadora de ración BARF para perros y gatos. Herramienta de Beef & Bones.">
+    <meta name="robots" content="index, follow">
+    
+    <link rel="canonical" href="https://beefandbones.github.io/calculadora/">
+
+    <meta property="og:title" content="Calculadora BARF | Beef & Bones">
+    <meta property="og:description" content="Calcula la ración ideal para tu mascota en segundos.">
+    <meta property="og:image" content="https://beefandbones.github.io/calculadora/logo.png">
+    <meta property="og:url" content="https://beefandbones.github.io/calculadora/">
+    <meta property="og:type" content="website">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="overflow-hidden" id="main-body">
+
+    <div id="loader-overlay">
+        <div class="text-center bounce-in">
+            <img src="logo.png" alt="Logo Beef & Bones" class="w-40 h-auto mb-4 object-contain mx-auto drop-shadow-xl">
+            <h1 class="text-4xl font-bold text-gray-800 tracking-tight" style="color: #5D4037;">Beef & Bones</h1>
+            <p class="text-yellow-600 mt-2 font-bold animate-pulse">Preparando el platito...</p>
+        </div>
+    </div>
+
+    <div class="relative min-h-screen pb-12">
+        <header class="pt-8 pb-4 px-6 flex flex-col items-center justify-center fade-in-up" style="animation-delay: 0.1s;">
+            <div class="bg-white p-3 rounded-full shadow-lg mb-3 border-4 border-yellow-100 transform -rotate-3 hover:rotate-0 transition duration-300">
+                <img src="logo.png" alt="Logo" class="w-16 h-16 object-contain">
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 text-center leading-tight">
+                Calculadora <span id="title-accent" class="text-yellow-600">BARF</span>
+            </h1>
+        </header>
+
+        <main class="container mx-auto px-4 max-w-4xl">
+            <div class="flex justify-center mb-8 fade-in-up" style="animation-delay: 0.2s;">
+                <div class="species-toggle" id="speciesToggle" data-species="dog" onclick="toggleSpecies()">
+                    <div class="toggle-bg"></div>
+                    <div class="relative z-10 px-6 py-3 flex items-center gap-2 font-bold transition-colors duration-300" id="btn-dog">
+                        <i data-lucide="dog" class="w-6 h-6"></i> <span>Soy Perro</span>
+                    </div>
+                    <div class="relative z-10 px-6 py-3 flex items-center gap-2 font-bold text-gray-400 transition-colors duration-300" id="btn-cat">
+                        <i data-lucide="cat" class="w-6 h-6"></i> <span>Soy Gato</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <section class="bg-white p-6 md:p-8 card-shadow fade-in-up" style="animation-delay: 0.3s;">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 text-gray-700">
+                        <i data-lucide="paw-print" class="text-blue-500"></i> Sus Datos
+                    </h2>
+                    <form id="calculatorForm" onsubmit="handleCalculate(event)">
+                        <div class="mb-5">
+                            <label class="block text-sm font-bold text-gray-600 mb-2">¿Cuánto pesa hoy? (kg)</label>
+                            <input type="number" id="weight" step="0.1" class="w-full p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:bg-white focus:border-yellow-400 outline-none transition font-bold text-lg" placeholder="Ej: 15.5" required>
+                        </div>
+                        <div class="mb-5">
+                            <label class="block text-sm font-bold text-gray-600 mb-2">Peso ideal (Opcional)</label>
+                            <input type="number" id="targetWeight" step="0.1" class="w-full p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl outline-none font-bold" placeholder="Si está a dieta...">
+                        </div>
+                        <div id="cat-specific-inputs" class="mb-5 hidden">
+                            <label class="flex items-center p-4 bg-purple-50 border-2 border-purple-100 rounded-2xl cursor-pointer hover:bg-purple-100 transition">
+                                <input type="checkbox" id="isNeutered" class="w-6 h-6 text-purple-600 rounded" checked>
+                                <span class="ml-3 font-bold text-purple-900">¿Está castrado?</span>
+                            </label>
+                        </div>
+                        <div class="mb-8">
+                            <label class="block text-sm font-bold text-gray-600 mb-3">Nivel de Actividad</label>
+                            <div class="grid grid-cols-2 gap-3" id="activity-options"></div>
+                        </div>
+                        <button type="submit" id="calc-btn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-white text-xl font-bold py-4 rounded-2xl btn-3d flex justify-center items-center gap-2">
+                            <span>¡Calcular Plato!</span> <i data-lucide="utensils"></i>
+                        </button>
+                    </form>
+                </section>
+
+                <section id="results-section" class="hidden fade-in-up">
+                    <div class="bg-white p-6 md:p-8 card-shadow h-full border-t-8" id="result-container-border" style="border-color: var(--primary-dog);">
+                        <div class="text-center mb-8 bg-gray-50 rounded-2xl p-6 border-2 border-dashed border-gray-200">
+                            <p class="text-gray-500 font-bold uppercase text-xs">Ración Diaria Total</p>
+                            <h3 class="text-5xl font-extrabold text-gray-800" id="total-daily">0g</h3>
+                            <p class="text-sm text-gray-500 mt-2">🔥 <span id="val-mer">0</span> kcal/día</p>
+                        </div>
+                        <h4 class="font-bold text-lg mb-4 text-gray-700">Ingredientes</h4>
+                        <div class="space-y-4" id="ingredients-list"></div>
+                        <div id="cat-alert-box" class="hidden mt-6 bg-red-50 p-4 rounded-2xl border-2 border-red-100 text-sm text-red-800">
+                            <p class="font-bold">¡Ojo con la Taurina!</p>
+                            <p id="taurine-msg">Estimando...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <div id="disclaimer-container" class="mt-10 mb-12 opacity-90 text-sm fade-in-up" style="animation-delay: 0.4s;"></div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
